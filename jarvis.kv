@@ -1,0 +1,356 @@
+#:import hex kivy.utils.get_color_from_hex
+
+<JARVISLabel@Label>:
+    font_name: 'Roboto'
+    font_size: '16sp'
+    
+<JARVISButton@Button>:
+    font_name: 'Roboto'
+    font_size: '16sp'
+    background_normal: ''
+    background_color: hex('#667eea')
+    color: hex('#ffffff')
+    size_hint_y: None
+    height: '48dp'
+    padding: '16dp', '8dp'
+    canvas.after:
+        Color:
+            rgba: hex('#764ba2') if self.state == 'down' else hex('#667eea')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [24]
+
+<MessageBubble@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    padding: '12dp'
+    spacing: '4dp'
+    canvas.before:
+        Color:
+            rgba: hex('#2d2d2d') if self.is_user else hex('#1a1a2e')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [16, 16, 16, 4] if self.is_user else [16, 16, 4, 16]
+    is_user: False
+    Label:
+        id: msg_text
+        text: ''
+        markup: True
+        size_hint_y: None
+        height: self.texture_size[1] + 20
+        text_size: self.width - 24, None
+        color: hex('#ffffff')
+        font_size: '15sp'
+        halign: 'left'
+        valign: 'top'
+    Label:
+        id: msg_time
+        text: ''
+        size_hint_y: None
+        height: '20dp'
+        color: hex('#888888')
+        font_size: '11sp'
+        halign: 'right'
+
+<ChatScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: hex('#0f0f1a')
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        # Header
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    title: 'J.A.R.V.I.S'
+                    with_previous: False
+                ActionOverflow:
+                ActionButton:
+                    text: 'History'
+                    on_press: root.open_history()
+                ActionButton:
+                    text: 'Settings'
+                    on_press: root.open_settings()
+        
+        # Mode Toggle
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            padding: '8dp'
+            spacing: '8dp'
+            ToggleButton:
+                id: general_mode
+                text: 'General'
+                group: 'mode'
+                state: 'down'
+                on_press: root.set_mode('general')
+            ToggleButton:
+                id: realtime_mode
+                text: 'Realtime'
+                group: 'mode'
+                on_press: root.set_mode('realtime')
+        
+        # Messages Area
+        ScrollView:
+            id: scroll_view
+            do_scroll_x: False
+            BoxLayout:
+                id: messages_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '8dp'
+                spacing: '8dp'
+                Label:
+                    text: 'Hello! I am J.A.R.V.I.S, your AI assistant.\\nHow can I help you today?'
+                    size_hint_y: None
+                    height: self.texture_size[1] + 40
+                    color: hex('#aaaaaa')
+                    font_size: '14sp'
+                    halign: 'center'
+        
+        # Input Area
+        BoxLayout:
+            size_hint_y: None
+            height: '60dp'
+            padding: '8dp'
+            spacing: '8dp'
+            canvas.before:
+                Color:
+                    rgba: hex('#1a1a2e')
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            TextInput:
+                id: message_input
+                hint_text: 'Type a message...'
+                multiline: False
+                font_size: '16sp'
+                foreground_color: hex('#ffffff')
+                background_color: hex('#2d2d2d')
+                background_normal: ''
+                on_text_validate: root.send_message()
+            
+            Button:
+                id: voice_btn
+                text: '🎤'
+                size_hint_x: None
+                width: '48dp'
+                on_press: root.toggle_voice()
+            
+            Button:
+                id: send_btn
+                text: 'Send'
+                size_hint_x: None
+                width: '80dp'
+                on_press: root.send_message()
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: hex('#0f0f1a')
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        # Header
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    title: 'Settings'
+                    on_press: root.go_back()
+        
+        ScrollView:
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '16dp'
+                spacing: '16dp'
+                
+                # User Profile Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: '120dp'
+                    canvas.before:
+                        Color:
+                            rgba: hex('#1a1a2e')
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [16]
+                    padding: '16dp'
+                    Label:
+                        id: user_name
+                        text: 'Tony Stark'
+                        font_size: '20sp'
+                        bold: True
+                        color: hex('#ffffff')
+                    Label:
+                        id: user_level
+                        text: 'Level 5 Assistant Master'
+                        font_size: '14sp'
+                        color: hex('#888888')
+                
+                # Theme Settings
+                Label:
+                    text: 'Theme'
+                    size_hint_y: None
+                    height: '32dp'
+                    halign: 'left'
+                    text_size: self.size
+                    color: hex('#ffffff')
+                    font_size: '18sp'
+                    bold: True
+                
+                BoxLayout:
+                    size_hint_y: None
+                    height: '48dp'
+                    spacing: '8dp'
+                    ToggleButton:
+                        id: theme_dark
+                        text: 'Dark'
+                        group: 'theme'
+                        state: 'down'
+                        on_press: root.set_theme('dark')
+                    ToggleButton:
+                        id: theme_light
+                        text: 'Light'
+                        group: 'theme'
+                        on_press: root.set_theme('light')
+                
+                # TTS Settings
+                BoxLayout:
+                    size_hint_y: None
+                    height: '48dp'
+                    Label:
+                        text: 'Text-to-Speech'
+                        color: hex('#ffffff')
+                        halign: 'left'
+                        text_size: self.size
+                    Switch:
+                        id: tts_switch
+                        on_active: root.set_tts(self.active)
+                
+                # API URL Settings
+                Label:
+                    text: 'API URL'
+                    size_hint_y: None
+                    height: '32dp'
+                    halign: 'left'
+                    text_size: self.size
+                    color: hex('#ffffff')
+                    font_size: '18sp'
+                    bold: True
+                
+                TextInput:
+                    id: api_url_input
+                    hint_text: 'http://localhost:8000'
+                    multiline: False
+                    font_size: '14sp'
+                    foreground_color: hex('#ffffff')
+                    background_color: hex('#2d2d2d')
+                    background_normal: ''
+                    size_hint_y: None
+                    height: '48dp'
+                
+                Button:
+                    text: 'Save Settings'
+                    size_hint_y: None
+                    height: '48dp'
+                    on_press: root.save_settings()
+
+<HistoryScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: hex('#0f0f1a')
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        # Header
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    title: 'Chat History'
+                    on_press: root.go_back()
+                ActionButton:
+                    text: 'New Chat'
+                    on_press: root.new_chat()
+        
+        # Search
+        TextInput:
+            id: search_input
+            hint_text: 'Search conversations...'
+            multiline: False
+            font_size: '16sp'
+            foreground_color: hex('#ffffff')
+            background_color: hex('#2d2d2d')
+            background_normal: ''
+            size_hint_y: None
+            height: '48dp'
+            padding: '16dp', '12dp'
+            on_text: root.search_history(self.text)
+        
+        # History List
+        ScrollView:
+            id: history_scroll
+            do_scroll_x: False
+            BoxLayout:
+                id: history_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '8dp'
+                spacing: '4dp'
+                Label:
+                    text: 'No chat history yet'
+                    size_hint_y: None
+                    height: '100dp'
+                    color: hex('#888888')
+                    font_size: '14sp'
+                    halign: 'center'
+
+<HistoryItem@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '80dp'
+    padding: '12dp'
+    spacing: '4dp'
+    canvas.before:
+        Color:
+            rgba: hex('#1a1a2e')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [12]
+    session_id: ''
+    Label:
+        id: preview_text
+        text: 'Chat preview...'
+        color: hex('#ffffff')
+        font_size: '14sp'
+        halign: 'left'
+        text_size: self.size
+        shorten: True
+        shorten_from: 'right'
+    Label:
+        id: date_text
+        text: 'Today'
+        color: hex('#888888')
+        font_size: '12sp'
+        halign: 'left'
+        text_size: self.size

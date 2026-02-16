@@ -1,0 +1,16 @@
+# J.A.R.V.I.S Mobile App Requirements
+# Core Kivy framework
+kivy>=2.2.0
+
+# HTTP requests
+requests>=2.28.0
+
+# Speech recognition (for desktop testing)
+speechrecognition>=3.10.0
+
+# Text-to-speech (for desktop testing)
+pyttsx3>=2.90
+
+# Android-specific (will be used by buildozer)
+# pyjnius - for Android API access
+# android - for Android-specific features
